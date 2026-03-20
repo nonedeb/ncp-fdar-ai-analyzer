@@ -206,73 +206,73 @@ def create_app():
     @login_required
     @role_required("student")
     def student_submit():
-    if request.method == "POST":
-        document_type = request.form.get("document_type")
-        title = request.form.get("title", "").strip()
-        file = request.files.get("file")
-
-        if document_type not in {"NCP", "FDAR"} or not title or not file or file.filename == "":
-            flash("Complete all fields.", "danger")
-            return redirect(url_for("student_submit"))
-
-        if not allowed_file(file.filename):
-            flash("Allowed: PDF, PNG, JPG, JPEG.", "danger")
-            return redirect(url_for("student_submit"))
-
-        filename = secure_filename(file.filename)
-        stamped = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{session['user_id']}_{filename}"
-        path = os.path.join(app.config["UPLOAD_FOLDER"], stamped)
-        file.save(path)
-
-        ext = filename.rsplit(".", 1)[1].lower()
-
-        # Extract text
-        extracted_text = ""
-        try:
-            if ext == "pdf":
-                extracted_text = extract_pdf_text(path)
-            else:
-                extracted_text = "Image uploaded. OCR path can be added next."
-        except Exception as e:
-            print("Extraction error:", e)
-            extracted_text = "Text extraction failed."
-
-        # AI Analysis
-        try:
-            analysis = analyze_with_openai(
-                document_type,
-                extracted_text or "No extractable text found."
+        if request.method == "POST":
+            document_type = request.form.get("document_type")
+            title = request.form.get("title", "").strip()
+            file = request.files.get("file")
+    
+            if document_type not in {"NCP", "FDAR"} or not title or not file or file.filename == "":
+                flash("Complete all fields.", "danger")
+                return redirect(url_for("student_submit"))
+    
+            if not allowed_file(file.filename):
+                flash("Allowed: PDF, PNG, JPG, JPEG.", "danger")
+                return redirect(url_for("student_submit"))
+    
+            filename = secure_filename(file.filename)
+            stamped = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{session['user_id']}_{filename}"
+            path = os.path.join(app.config["UPLOAD_FOLDER"], stamped)
+            file.save(path)
+    
+            ext = filename.rsplit(".", 1)[1].lower()
+    
+            # Extract text
+            extracted_text = ""
+            try:
+                if ext == "pdf":
+                    extracted_text = extract_pdf_text(path)
+                else:
+                    extracted_text = "Image uploaded. OCR path can be added next."
+            except Exception as e:
+                print("Extraction error:", e)
+                extracted_text = "Text extraction failed."
+    
+            # AI Analysis
+            try:
+                analysis = analyze_with_openai(
+                    document_type,
+                    extracted_text or "No extractable text found."
+                )
+            except Exception as e:
+                print("AI analysis error:", e)
+                analysis = fallback_analysis(document_type)
+    
+            # Save to DB
+            s = Submission(
+                student_id=session["user_id"],
+                document_type=document_type,
+                title=title,
+                original_filename=filename,
+                file_path=path,
+                extracted_text=extracted_text,
+                ai_total_score=float(analysis.get("total_score", 0)),
+                ai_breakdown_json=json.dumps(analysis.get("breakdown", {})),
+                ai_feedback=analysis.get("feedback_summary"),
+                ai_strengths=json.dumps(analysis.get("strengths", [])),
+                ai_improvements=json.dumps(analysis.get("improvements", [])),
+                ai_suggested_revision=analysis.get("suggested_revision"),
+                ai_curriculum_tags=json.dumps(analysis.get("curriculum_tags", [])),
+                final_score=float(analysis.get("total_score", 0)),
+                status="analyzed"
             )
-        except Exception as e:
-            print("AI analysis error:", e)
-            analysis = fallback_analysis(document_type)
-
-        # Save to DB
-        s = Submission(
-            student_id=session["user_id"],
-            document_type=document_type,
-            title=title,
-            original_filename=filename,
-            file_path=path,
-            extracted_text=extracted_text,
-            ai_total_score=float(analysis.get("total_score", 0)),
-            ai_breakdown_json=json.dumps(analysis.get("breakdown", {})),
-            ai_feedback=analysis.get("feedback_summary"),
-            ai_strengths=json.dumps(analysis.get("strengths", [])),
-            ai_improvements=json.dumps(analysis.get("improvements", [])),
-            ai_suggested_revision=analysis.get("suggested_revision"),
-            ai_curriculum_tags=json.dumps(analysis.get("curriculum_tags", [])),
-            final_score=float(analysis.get("total_score", 0)),
-            status="analyzed"
-        )
-
-        db.session.add(s)
-        db.session.commit()
-
-        flash("Submission uploaded and analyzed.", "success")
-        return redirect(url_for("student_submission_detail", submission_id=s.id))
-
-    return render_template("student/submit.html")
+    
+            db.session.add(s)
+            db.session.commit()
+    
+            flash("Submission uploaded and analyzed.", "success")
+            return redirect(url_for("student_submission_detail", submission_id=s.id))
+    
+        return render_template("student/submit.html")
     
     @app.route("/student/submissions")
     @login_required
