@@ -203,9 +203,9 @@ def create_app():
     @login_required
     @role_required("student")
     @app.route("/student/submit", methods=["GET", "POST"])
-@login_required
-@role_required("student")
-def student_submit():
+    @login_required
+    @role_required("student")
+    def student_submit():
     if request.method == "POST":
         document_type = request.form.get("document_type")
         title = request.form.get("title", "").strip()
