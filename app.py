@@ -202,6 +202,12 @@ def create_app():
     @app.route("/student")
     @login_required
     @role_required("student")
+    def student_dashboard():
+        subs = Submission.query.filter_by(student_id=session["user_id"]).order_by(Submission.created_at.desc()).all()
+        avg = round(sum((s.final_score or s.ai_total_score or 0) for s in subs)/len(subs), 2) if subs else 0
+        return render_template("student/dashboard.html", submissions=subs[:5], avg_score=avg)
+    
+    
     @app.route("/student/submit", methods=["GET", "POST"])
     @login_required
     @role_required("student")
@@ -226,7 +232,6 @@ def create_app():
     
             ext = filename.rsplit(".", 1)[1].lower()
     
-            # Extract text
             extracted_text = ""
             try:
                 if ext == "pdf":
@@ -237,7 +242,6 @@ def create_app():
                 print("Extraction error:", e)
                 extracted_text = "Text extraction failed."
     
-            # AI Analysis
             try:
                 analysis = analyze_with_openai(
                     document_type,
@@ -247,7 +251,6 @@ def create_app():
                 print("AI analysis error:", e)
                 analysis = fallback_analysis(document_type)
     
-            # Save to DB
             s = Submission(
                 student_id=session["user_id"],
                 document_type=document_type,
