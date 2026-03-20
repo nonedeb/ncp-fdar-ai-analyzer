@@ -1,8 +1,1 @@
-{% extends "base.html" %}{% block content %}
-<h2 class="fw-bold mb-4">Student Dashboard</h2>
-<div class="row g-4 mb-4">
-<div class="col-md-4"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Average Score</div><div class="fs-2 fw-bold text-primary">{{ avg_score }}%</div></div></div></div>
-<div class="col-md-8"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Recent Submissions</div><div class="fs-2 fw-bold">{{ submissions|length }}</div></div></div></div>
-</div>
-<a class="btn btn-primary rounded-3" href="{{ url_for('student_submit') }}">New Submission</a>
-{% endblock %}
+{% extends "base.html" %}{% block content %}<h2 class="fw-bold mb-4">Student Dashboard</h2><div class="row g-4 mb-4"><div class="col-md-4"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Average Score</div><div class="fs-2 fw-bold text-primary">{{ avg_score }}%</div></div></div></div><div class="col-md-8"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Recent Submissions</div><div class="fs-2 fw-bold">{{ submissions|length }}</div></div></div></div></div><div class="d-flex gap-2"><a class="btn btn-primary rounded-3" href="{{ url_for('student_submit') }}">New Submission</a><a class="btn btn-outline-primary rounded-3" href="{{ url_for('student_submissions') }}">View Results</a></div>{% endblock %}

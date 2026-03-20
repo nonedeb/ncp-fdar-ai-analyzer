@@ -1,17 +1,1 @@
-{% extends "base.html" %}{% block content %}
-<h2 class="fw-bold mb-4">Faculty Review: {{ sub.title }}</h2>
-<div class="row g-4">
-<div class="col-md-8"><div class="card border-0 shadow-sm rounded-4"><div class="card-body">
-<p><strong>Student:</strong> {{ student.name }} — {{ student.email }}</p>
-<p><strong>AI Feedback:</strong> {{ sub.ai_feedback }}</p>
-<table class="table"><thead><tr><th>Criterion</th><th>Score</th><th>Max</th><th>Comment</th></tr></thead><tbody>
-{% for k,v in breakdown.items() %}<tr><td>{{ k }}</td><td>{{ v.score }}</td><td>{{ v.max_score }}</td><td>{{ v.comment }}</td></tr>{% endfor %}
-</tbody></table>
-<div class="p-3 bg-light rounded-3">{{ sub.ai_suggested_revision }}</div>
-</div></div></div>
-<div class="col-md-4"><div class="card border-0 shadow-sm rounded-4"><div class="card-body">
-<form method="POST"><div class="mb-3"><label class="form-label">Manual Score</label><input name="faculty_manual_score" type="number" min="0" max="100" step="0.01" class="form-control rounded-3" value="{{ sub.faculty_manual_score or '' }}"></div>
-<div class="mb-3"><label class="form-label">Faculty Comment</label><textarea name="faculty_comment" class="form-control rounded-3" rows="6">{{ sub.faculty_comment or '' }}</textarea></div>
-<button class="btn btn-primary w-100 rounded-3">Save Review</button></form>
-</div></div></div></div>
-{% endblock %}
+{% extends "base.html" %}{% block content %}<div class="d-flex justify-content-between align-items-center mb-4"><h2 class="fw-bold mb-0">Faculty Review: {{ sub.title }}</h2><button class="btn btn-outline-secondary rounded-3" onclick="window.print()">Print Page</button></div><div class="row g-4"><div class="col-md-8"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><p><strong>Student:</strong> {{ student.name }} — {{ student.email }}</p><p><strong>AI Score:</strong> {{ sub.ai_total_score }} | <strong>Confidence:</strong> {{ sub.ai_confidence }}% | <strong>Band:</strong> {{ sub.grade_band }}</p><p><strong>AI Feedback:</strong> {{ sub.ai_feedback }}</p><table class="table table-hover"><thead><tr><th>Criterion</th><th>Score</th><th>Max</th><th>Comment</th></tr></thead><tbody>{% for k,v in breakdown.items() %}<tr><td>{{ k }}</td><td>{{ v.score }}</td><td>{{ v.max_score }}</td><td>{{ v.comment }}</td></tr>{% endfor %}</tbody></table><h5>Strengths</h5><ul>{% for x in strengths %}<li>{{ x }}</li>{% endfor %}</ul><h5>Improvements</h5><ul>{% for x in improvements %}<li>{{ x }}</li>{% endfor %}</ul><h5>Suggested Revision</h5><div class="p-3 bg-light rounded-3" style="white-space: pre-wrap;">{{ sub.ai_suggested_revision }}</div><h5 class="mt-4">Curriculum Tags</h5><p>{% for t in tags %}<span class="badge text-bg-secondary me-1">{{ t }}</span>{% endfor %}</p></div></div></div><div class="col-md-4"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><form method="POST"><div class="mb-3"><label class="form-label">Manual Score</label><input name="faculty_manual_score" type="number" min="0" max="100" step="0.01" class="form-control rounded-3" value="{{ sub.faculty_manual_score or '' }}"></div><div class="mb-3"><label class="form-label">Faculty Comment</label><textarea name="faculty_comment" class="form-control rounded-3" rows="7">{{ sub.faculty_comment or '' }}</textarea></div><button class="btn btn-primary rounded-3 w-100">Save Review</button></form></div></div></div></div>{% endblock %}
