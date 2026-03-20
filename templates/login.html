@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block content %}
+<div class="row justify-content-center"><div class="col-lg-5"><div class="card border-0 shadow rounded-4"><div class="card-body p-4">
+<h2 class="fw-bold mb-3 text-center">Login</h2>
+<p class="text-muted text-center">AI-powered NCP and FDAR analyzer with faculty review.</p>
+<form method="POST">
+<div class="mb-3"><label class="form-label">Email</label><input name="email" type="email" class="form-control rounded-3" required></div>
+<div class="mb-3"><label class="form-label">Password</label><input name="password" type="password" class="form-control rounded-3" required></div>
+<button class="btn btn-primary w-100 rounded-3">Log In</button></form>
+<div class="small text-muted mt-3">Demo accounts:<br>manager@nursingai.local / Manager123!<br>faculty@nursingai.local / Faculty123!<br>student@nursingai.local / Student123!</div>
+</div></div></div></div>
+{% endblock %}

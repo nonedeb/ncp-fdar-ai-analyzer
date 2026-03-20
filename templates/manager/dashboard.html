@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block content %}
+<h2 class="fw-bold mb-4">Manager Dashboard</h2>
+<div class="row g-4">
+<div class="col-md-3"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Users</div><div class="fs-2 fw-bold">{{ total_users }}</div></div></div></div>
+<div class="col-md-3"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Students</div><div class="fs-2 fw-bold">{{ total_students }}</div></div></div></div>
+<div class="col-md-3"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Faculty</div><div class="fs-2 fw-bold">{{ total_faculty }}</div></div></div></div>
+<div class="col-md-3"><div class="card border-0 shadow-sm rounded-4"><div class="card-body"><div class="text-muted">Submissions</div><div class="fs-2 fw-bold">{{ total_submissions }}</div></div></div></div>
+</div>
+{% endblock %}
